@@ -1,12 +1,10 @@
-package com.example.salvo.models;
+package com.codeoftheweb.salvo.models;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class GamePlayer {
@@ -79,12 +77,12 @@ public class GamePlayer {
 
     }
 
-    public Map<String, Object> getShipDTO() {
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("ships", this.getShips().
+    public List<Object> getShipDTO() {
+
+       return  this.getShips().
                 stream().
-                map(ship -> ship.makeShipDTO()));
-        return dto;
+                map(ship -> ship.makeShipDTO()).collect(Collectors.toList());
+
     }
 
     public Set<Ship> getShips() {

@@ -1,14 +1,12 @@
-package com.example.salvo;
+package com.codeoftheweb.salvo;
 
-import com.example.salvo.repository.GamePlayerRepository;
-import com.example.salvo.repository.GameRepository;
-import com.example.salvo.repository.PlayerRepository;
+import com.codeoftheweb.salvo.repository.GamePlayerRepository;
+import com.codeoftheweb.salvo.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,10 +30,9 @@ public class SalvoController {
             .collect(Collectors.toList());
 }
     @RequestMapping("/game_view/{gpid}")
-    public List<Object> getGame(@PathVariable   long    gpid){
-        List<Object> dto = new ArrayList<>();
-        dto.add(gamePlayerRepository.getOne(gpid).getGame().makeGameDTO());
-        dto.add(gamePlayerRepository.getOne(gpid).getShipDTO());
+    public Map<String,Object> getGame(@PathVariable   long    gpid){
+        Map<String,Object> dto = gamePlayerRepository.getOne(gpid).getGame().makeGameDTO();
+        dto.put("ships",gamePlayerRepository.getOne(gpid).getShipDTO());
         return dto;
 
 

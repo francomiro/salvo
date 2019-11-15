@@ -1,6 +1,6 @@
-package com.example.salvo.repository;
+package com.codeoftheweb.salvo.repository;
 
-import com.example.salvo.models.Game;
+import com.codeoftheweb.salvo.models.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

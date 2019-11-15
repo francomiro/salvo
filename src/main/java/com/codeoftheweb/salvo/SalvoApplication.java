@@ -1,17 +1,17 @@
-package com.example.salvo;
+package com.codeoftheweb.salvo;
 
-import com.example.salvo.models.Game;
-import com.example.salvo.models.GamePlayer;
-import com.example.salvo.models.Player;
-import com.example.salvo.models.Ship;
-import com.example.salvo.repository.GamePlayerRepository;
-import com.example.salvo.repository.GameRepository;
-import com.example.salvo.repository.ShipRepository;
+import com.codeoftheweb.salvo.models.Game;
+import com.codeoftheweb.salvo.models.GamePlayer;
+import com.codeoftheweb.salvo.models.Player;
+import com.codeoftheweb.salvo.models.Ship;
+import com.codeoftheweb.salvo.repository.GamePlayerRepository;
+import com.codeoftheweb.salvo.repository.GameRepository;
+import com.codeoftheweb.salvo.repository.ShipRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import com.example.salvo.repository.PlayerRepository;
+import com.codeoftheweb.salvo.repository.PlayerRepository;
 
 import java.util.ArrayList;
 import java.util.Date;
