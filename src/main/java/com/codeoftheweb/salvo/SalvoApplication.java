@@ -1,15 +1,21 @@
-package com.codeoftheweb.salvo;
+package com.example.salvo;
 
-import com.codeoftheweb.salvo.models.Game;
-import com.codeoftheweb.salvo.models.GamePlayer;
-import com.codeoftheweb.salvo.models.Player;
-import com.codeoftheweb.salvo.repository.GamePlayerRepository;
-import com.codeoftheweb.salvo.repository.GameRepository;
-import com.codeoftheweb.salvo.repository.PlayerRepository;
+import com.example.salvo.models.Game;
+import com.example.salvo.models.GamePlayer;
+import com.example.salvo.models.Player;
+import com.example.salvo.models.Ship;
+import com.example.salvo.repository.GamePlayerRepository;
+import com.example.salvo.repository.GameRepository;
+import com.example.salvo.repository.ShipRepository;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import com.example.salvo.repository.PlayerRepository;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 @SpringBootApplication
@@ -20,48 +26,59 @@ public class SalvoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository) {
+	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository) {
 		return (args) -> {
-			Player player1 = new Player("asd@gmail.com");
-			Player player2 = new Player("asd12345@gmail.com");
-			Player player3 = new Player("asd33333@gmail.com");
-			Player player4 = new Player("asd444444@gmail.com");
-			Player player5 = new Player("asd5555555@gmail.com");
 
-
+			Player player1 = new Player("franco@asda1");
+			Player player2 = new Player("franco@asda2");
+			Player player3 = new Player("franco@asda3");
 
 			playerRepository.save(player1);
 			playerRepository.save(player2);
 			playerRepository.save(player3);
-			playerRepository.save(player4);
-			playerRepository.save(player5);
 
+			Date dateGame = new Date();
+			Game game1 = new Game(dateGame);
+			Game game2 = new Game(dateGame);
+			Game game3 = new Game(dateGame);
 
-			Game game1 = new Game();
 			gameRepository.save(game1);
-			Game game2 = new Game();
 			gameRepository.save(game2);
-			Game game3 = new Game();
 			gameRepository.save(game3);
 
-			GamePlayer gamePlayer1 = new GamePlayer(player1, game1);
-			GamePlayer gamePlayer2 = new GamePlayer(player2, game1);
-			GamePlayer gamePlayer3 = new GamePlayer(player3, game2);
-			GamePlayer gamePlayer4 = new GamePlayer(player4, game2);
-			GamePlayer gamePlayer5 = new GamePlayer(player5, game3);
-
+			GamePlayer gamePlayer1 = new GamePlayer(game1,player1);
+			GamePlayer gamePlayer2 = new GamePlayer(game1,player2);
+			GamePlayer gamePlayer3 = new GamePlayer(game2,player3);
 
 			gamePlayerRepository.save(gamePlayer1);
 			gamePlayerRepository.save(gamePlayer2);
-
 			gamePlayerRepository.save(gamePlayer3);
-			gamePlayerRepository.save(gamePlayer4);
+
+			List<String> locations1 = new ArrayList<>();
+			locations1.add("H1");
+			locations1.add("H2");
+			locations1.add("H3");
+
+			List<String> locations2 = new ArrayList<>();
+			locations2.add("B3");
+			locations2.add("B4");
+			locations2.add("B5");
+
+			List<String> locations3 = new ArrayList<>();
+			locations3.add("C2");
+			locations3.add("C3");
+			locations3.add("C4");
 
 
-			gamePlayerRepository.save(gamePlayer5);
+			Ship ship1 = new Ship(gamePlayer1, "Destroyer", locations1);
+			Ship ship2 = new Ship(gamePlayer2, "Destroyer", locations2);
+			Ship ship3 = new Ship(gamePlayer3, "Destroyer", locations3);
 
-
-
+			shipRepository.save(ship1);
+			shipRepository.save(ship2);
+			shipRepository.save(ship3);
 		};
 	}
 }
+
+

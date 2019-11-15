@@ -1,9 +1,12 @@
-package com.codeoftheweb.salvo.models;
+package com.example.salvo.models;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -12,37 +15,26 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
-    private long id;
+    private Long id;
+
     private Date creationDate;
 
-    @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
-    private Set<GamePlayer> gamePlayers;
-
-    public Map<String, Object> makeGameDTO(){
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("id", this.getId());
-        dto.put("created", this.getCreationDate());
-        dto.put("gamePlayers", this.getGamePlayers()
-                .stream()
-                .map(gamePlayer -> gamePlayer.makeGamePlayers())
-                .collect(Collectors.toList()));
-        return dto;
-    }
-
+    @OneToMany(mappedBy="game", fetch=FetchType.EAGER)
+    Set<GamePlayer> gamePlayers;
+    
 
     public Game(){
-this.creationDate = new Date();
-}
 
-public Game(Date creationDate){
-    this.creationDate = creationDate;
-}
+    }
+    public Game(Date fecha){
+        this.creationDate = fecha;
+    }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -60,5 +52,17 @@ public Game(Date creationDate){
 
     public void setGamePlayers(Set<GamePlayer> gamePlayers) {
         this.gamePlayers = gamePlayers;
+    }
+
+    public Map<String , Object> makeGameDTO() {
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", this.getId());
+        dto.put("created" , this.getCreationDate());
+        dto.put("gamePlayers", this.getGamePlayers()
+                                .stream()
+                                .map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
+                                .collect(Collectors.toList()));
+        return dto;
+
     }
 }

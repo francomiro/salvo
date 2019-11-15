@@ -1,11 +1,11 @@
-package com.codeoftheweb.salvo.models;
-
+package com.example.salvo.models;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -14,26 +14,29 @@ public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
-    private long id;
+    private Long id;
 
     private String userName;
 
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
-    private Set<GamePlayer> gamePlayers;
-
-    public Map<String, Object> makePlayerDTO(){
-        Map<String, Object> dto = new HashMap<>();
-        dto.put("id", this.getId());
-        dto.put("email", this.getUserName());
-        return dto;
-    }
+    Set<GamePlayer> gamePlayers;
 
     public Player(){
 
     }
 
-    public Player(String userName){
-        this.userName=userName;
+    public Player(String mail)
+    {
+        this.userName = mail;
+    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUserName() {
@@ -44,19 +47,18 @@ public class Player {
         this.userName = userName;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public Set<GamePlayer> getGamePlayers() {
         return gamePlayers;
     }
 
     public void setGamePlayers(Set<GamePlayer> gamePlayers) {
         this.gamePlayers = gamePlayers;
+    }
+
+    public Map<String, Object> makePlayerDTO() {
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", this.getId());
+        dto.put("email" , this.getUserName());
+        return dto;
     }
 }
