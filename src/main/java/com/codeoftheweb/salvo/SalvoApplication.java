@@ -1,17 +1,11 @@
 package com.codeoftheweb.salvo;
 
-import com.codeoftheweb.salvo.models.Game;
-import com.codeoftheweb.salvo.models.GamePlayer;
-import com.codeoftheweb.salvo.models.Player;
-import com.codeoftheweb.salvo.models.Ship;
-import com.codeoftheweb.salvo.repository.GamePlayerRepository;
-import com.codeoftheweb.salvo.repository.GameRepository;
-import com.codeoftheweb.salvo.repository.ShipRepository;
+import com.codeoftheweb.salvo.models.*;
+import com.codeoftheweb.salvo.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import com.codeoftheweb.salvo.repository.PlayerRepository;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,7 +20,7 @@ public class SalvoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository) {
+	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository, SalvoRepository salvoRepository) {
 		return (args) -> {
 
 			Player player1 = new Player("franco@asda1");
@@ -77,6 +71,33 @@ public class SalvoApplication {
 			shipRepository.save(ship1);
 			shipRepository.save(ship2);
 			shipRepository.save(ship3);
+
+			List<String> locations4 = new ArrayList<>();
+			locations4.add("B3");
+			locations4.add("H2");
+
+			List<String> locations5 = new ArrayList<>();
+			locations5.add("B2");
+			locations5.add("A2");
+
+			List<String> locations6 = new ArrayList<>();
+			locations6.add("C3");
+			locations6.add("C4");
+
+
+			Salvo salvo1 = new Salvo(gamePlayer1, locations4, 1);
+			Salvo salvo2 = new Salvo(gamePlayer1, locations6, 2);
+			Salvo salvo3 = new Salvo(gamePlayer2, locations5, 1);
+			Salvo salvo4 = new Salvo(gamePlayer2, locations6, 2);
+			Salvo salvo5 = new Salvo(gamePlayer3, locations4, 1);
+
+			salvoRepository.save(salvo1);
+			salvoRepository.save(salvo2);
+			salvoRepository.save(salvo3);
+			salvoRepository.save(salvo4);
+			salvoRepository.save(salvo5);
+
+
 		};
 	}
 }

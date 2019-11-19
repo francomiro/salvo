@@ -26,7 +26,11 @@ public class GamePlayer {
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
     Set<Ship> ships;
 
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
+    Set<Salvo> salvos;
+
     public GamePlayer() {
+
         this.joinDate = new Date();
     }
 
@@ -91,5 +95,21 @@ public class GamePlayer {
 
     public void setShips(Set<Ship> ships) {
         this.ships = ships;
+    }
+
+    public Set<Salvo> getSalvos() {
+        return salvos;
+    }
+
+    public void setSalvos(Set<Salvo> salvos) {
+        this.salvos = salvos;
+    }
+
+    public List<Object> getSalvoDTO() {
+
+        return getSalvos().
+                stream().
+                map(salvo -> salvo.makeSalvoDTO()).
+                collect(Collectors.toList());
     }
 }
