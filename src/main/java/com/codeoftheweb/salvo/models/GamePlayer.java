@@ -77,6 +77,8 @@ public class GamePlayer {
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("id", this.getId());
         dto.put("player", this.getPlayer().makePlayerDTO());
+        //if (this.getScore() != null){
+        //dto.put("score", this.getScore().getScore());}
         return dto;
 
     }
@@ -112,4 +114,12 @@ public class GamePlayer {
                 map(salvo -> salvo.makeSalvoDTO()).
                 collect(Collectors.toList());
     }
+
+public Score getScore(){
+
+        return this.player.getScore(this.getGame());
+}
+
+
+
 }

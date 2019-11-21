@@ -21,7 +21,9 @@ public class Game {
 
     @OneToMany(mappedBy="game", fetch=FetchType.EAGER)
     Set<GamePlayer> gamePlayers;
-    
+
+    @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
+    Set<Score> score;
 
     public Game(){
 
@@ -62,7 +64,16 @@ public class Game {
                                 .stream()
                                 .map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
                                 .collect(Collectors.toList()));
+        dto.put("scores", this.getScore().stream().map(score1 -> score1.makeScoreDTO()).collect(Collectors.toList()));
         return dto;
 
+    }
+
+    public Set<Score> getScore() {
+        return score;
+    }
+
+    public void setScore(Set<Score> score) {
+        this.score = score;
     }
 }
