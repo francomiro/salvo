@@ -3,10 +3,8 @@ package com.codeoftheweb.salvo;
 import com.codeoftheweb.salvo.models.Game;
 import com.codeoftheweb.salvo.models.GamePlayer;
 import com.codeoftheweb.salvo.models.Player;
-import com.codeoftheweb.salvo.repository.GamePlayerRepository;
-import com.codeoftheweb.salvo.repository.GameRepository;
-import com.codeoftheweb.salvo.repository.PlayerRepository;
-import com.codeoftheweb.salvo.repository.SalvoRepository;
+import com.codeoftheweb.salvo.models.Ship;
+import com.codeoftheweb.salvo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +34,9 @@ public class SalvoController {
 
     @Autowired
     private SalvoRepository salvoRepository;
+
+    @Autowired
+    private ShipRepository shipRepository;
 
 
  //modificar como pida el punto 5
@@ -149,6 +150,41 @@ public class SalvoController {
 
         return new ResponseEntity<>(makeMap("gpid",gamePlayer.getId()),HttpStatus.CREATED);
     }
+    @RequestMapping(path = "/games/players/{gpid}/ships", method = RequestMethod.POST)
+    public ResponseEntity<Map<String,Object>> placeShips(@PathVariable long gpid, @RequestBody List<Ship> ships,Authentication authentication){
+        GamePlayer gamePlayer = gamePlayerRepository.findById(gpid).get();
+        if (isGuest(authentication)){
+
+            return new ResponseEntity<>(makeMap("Error", "Usuario no logueado"),HttpStatus.UNAUTHORIZED);
+        }
+        if (gamePlayer.getId() != gpid){
+
+            return new ResponseEntity<>(makeMap("Error", "El usuario no corresponde"),HttpStatus.UNAUTHORIZED);
+        }
+        if (playerAuth(authentication).getId() != gamePlayer.getPlayer().getId()){
+
+            return new ResponseEntity<>(makeMap("Error", "El usuario no  corresponde"),HttpStatus.UNAUTHORIZED);
+        }
+        if (gamePlayer.getShips().stream().count() >=5){
+            return new ResponseEntity<>(makeMap("Error", "Ya colocaste tus barcos"),HttpStatus.FORBIDDEN);
+        }
+
+     //  List<String> locations = ship.getLocations();
+       // String shipType = ship.getShipType();
+       // ship = shipRepository.save(Ship(gamePlayer, shipType ,locations));
+
+        ships.stream().forEach(ship -> ship.setGamePlayer(gamePlayer));
+        shipRepository.saveAll(ships);
+
+        return new ResponseEntity<>(makeMap("ships","Ships added"),HttpStatus.CREATED);
+
+    }
+
+
+
+
+
+
 
 
     private boolean isGuest(Authentication authentication) {
