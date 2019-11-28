@@ -18,7 +18,7 @@ public class Salvo {
     @GenericGenerator(name = "native", strategy = "native")
     private Long id;
 
-    private long turno;
+    private long turn;
 
     @ElementCollection
     private List<String> locations = new ArrayList<>();
@@ -32,8 +32,8 @@ public class Salvo {
 
     }
 
-    public Salvo(GamePlayer gamePlayer, List<String> locations, long turno) {
-        this.turno = turno;
+    public Salvo(GamePlayer gamePlayer, List<String> locations, long turn) {
+        this.turn = turn;
         this.gamePlayer = gamePlayer;
         this.locations = locations;
 
@@ -48,12 +48,12 @@ public class Salvo {
         this.id = id;
     }
 
-    public Long getTurno() {
-        return turno;
+    public Long getTurn() {
+        return turn;
     }
 
-    public void setTurno(Long turno) {
-        this.turno = turno;
+    public void setTurn(Long turn) {
+        this.turn = turn;
     }
 
     public List<String> getLocations() {
@@ -75,7 +75,7 @@ public class Salvo {
 
     public Map<String, Object> makeSalvoDTO() {
         Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("turn", this.getTurno());
+        dto.put("turn", this.getTurn());
         dto.put("player", this.gamePlayer.getPlayer().getId());
         dto.put("locations", this.getLocations());
         return dto;

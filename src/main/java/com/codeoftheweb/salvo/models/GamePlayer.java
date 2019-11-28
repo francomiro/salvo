@@ -83,6 +83,13 @@ public class GamePlayer {
 
     }
 
+    public GamePlayer getOpponent(){
+        return this.getGame().getGamePlayers().stream()
+                .filter(gamePlayer -> gamePlayer.getId() != this.getId())
+                .findFirst()
+                .orElse(new GamePlayer());
+    }
+
     public List<Object> getShipDTO() {
 
        return  this.getShips().
