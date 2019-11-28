@@ -21,7 +21,7 @@ public class Salvo {
     private long turn;
 
     @ElementCollection
-    private List<String> locations = new ArrayList<>();
+    private List<String> salvoLocations = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "gamePlayer_id")
@@ -32,10 +32,10 @@ public class Salvo {
 
     }
 
-    public Salvo(GamePlayer gamePlayer, List<String> locations, long turn) {
+    public Salvo(GamePlayer gamePlayer, List<String> salvoLocations, long turn) {
         this.turn = turn;
         this.gamePlayer = gamePlayer;
-        this.locations = locations;
+        this.salvoLocations = salvoLocations;
 
     }
 
@@ -56,12 +56,12 @@ public class Salvo {
         this.turn = turn;
     }
 
-    public List<String> getLocations() {
-        return locations;
+    public List<String> getSalvoLocations() {
+        return salvoLocations;
     }
 
-    public void setLocations(List<String> locations) {
-        this.locations = locations;
+    public void setSalvoLocations(List<String> salvoLocations) {
+        this.salvoLocations = salvoLocations;
     }
 
     public GamePlayer getGamePlayer() {
@@ -77,7 +77,7 @@ public class Salvo {
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("turn", this.getTurn());
         dto.put("player", this.gamePlayer.getPlayer().getId());
-        dto.put("locations", this.getLocations());
+        dto.put("locations", this.getSalvoLocations());
         return dto;
     }
 }
