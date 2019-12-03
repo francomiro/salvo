@@ -16,7 +16,7 @@ public class Salvo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
-    private Long id;
+    private long id;
 
     private long turn;
 
@@ -39,20 +39,25 @@ public class Salvo {
 
     }
 
+    public long countHits(Ship ship){
 
-    public Long getId() {
+        return this.getSalvoLocations()
+                .stream()
+                .filter(salvoLocs -> ship.getShipLocations().contains(salvoLocs))
+                .count();
+
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public Long getTurn() {
+    public long getTurn() {
         return turn;
     }
 
-    public void setTurn(Long turn) {
+    public void setTurn(long turn) {
         this.turn = turn;
     }
 

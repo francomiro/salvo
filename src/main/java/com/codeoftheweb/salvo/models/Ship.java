@@ -15,7 +15,7 @@ public class Ship {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
-    private Long id;
+    private long id;
 
     private String type;
 
@@ -39,7 +39,7 @@ public class Ship {
     }
 
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
@@ -53,10 +53,6 @@ public class Ship {
 
     public GamePlayer getGamePlayer() {
         return gamePlayer;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setType(String type) {
@@ -77,4 +73,5 @@ public class Ship {
         dto.put("locations" , getShipLocations());
         return dto;
     }
+
 }

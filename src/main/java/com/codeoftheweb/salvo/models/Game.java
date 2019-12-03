@@ -15,7 +15,7 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
-    private Long id;
+    private long id;
 
     private Date creationDate;
 
@@ -32,11 +32,11 @@ public class Game {
         this.creationDate = fecha;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
