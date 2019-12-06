@@ -130,11 +130,10 @@ public Score getScore(){
         Map<String,Object> dto = new LinkedHashMap<>();
            // for(Salvo a : salvos) {
 
-                dto.put("turn", salvo.getTurn());
-                dto.put("hitLocations", getHitsLocation(salvo));
-                dto.put("damages", this.getDamageDTO(salvo));
-                dto.put("missed", hitMissed(salvo));
-           // }
+        dto.put("turn", salvo.getTurn());
+        dto.put("hitLocations", getHitsLocation(salvo));
+        dto.put("damages", this.getDamageDTO(salvo));
+        dto.put("missed", hitMissed(salvo));
 
        return dto;
 
@@ -194,6 +193,38 @@ public Score getScore(){
         return missed;
     }
 
+    public long totalHits(){
+        List <Long> totalHitsForShip = new ArrayList<>();
+        List <Salvo> oppSalvo= new ArrayList<>(this.getOpponent().getSalvos());
+
+        totalHitsForShip.add(oppSalvo
+                .stream().map(salvo -> salvo.countHits(getShipByType("carrier"))).reduce(Long::sum).get());
+        totalHitsForShip.add( oppSalvo
+                .stream().map(salvo -> salvo.countHits(getShipByType("battleship"))).reduce(Long::sum).get());
+        totalHitsForShip.add( oppSalvo
+                .stream().map(salvo -> salvo.countHits(getShipByType("submarine"))).reduce(Long::sum).get());
+        totalHitsForShip.add( oppSalvo
+                .stream().map(salvo -> salvo.countHits(getShipByType("destroyer"))).reduce(Long::sum).get());
+        totalHitsForShip.add( oppSalvo
+                .stream().map(salvo -> salvo.countHits(getShipByType("patrolboat"))).reduce(Long::sum).get());
+
+    long sum = totalHitsForShip.stream().reduce(Long::sum).get();
+
+        return sum;
+
+    }
+
+    public boolean lost(){
+
+    if(this.getShips()
+                .stream()
+                .mapToLong(ship ->ship.getShipLocations().size())
+                .sum() == this.getOpponent().totalHits()) {
+        return true;
+
+    }
+    return false;
+    }
 //    public int hitsInAllTurns(Salvo s){
 //        s.countHits(getShip)
 //

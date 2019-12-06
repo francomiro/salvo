@@ -35,6 +35,9 @@ public class SalvoController {
     @Autowired
     private ShipRepository shipRepository;
 
+    @Autowired
+    private ScoreRepository scoreRepository;
+
 
     //modificar como pida el punto 5
     @RequestMapping(path = "/players", method = RequestMethod.POST)
@@ -131,11 +134,14 @@ public class SalvoController {
 
     private Map<String,Object> hitDTO(GamePlayer gamePlayer) {
 
+        List<Salvo> salvosDelOpp1 = gamePlayer.getOpponent().getSalvos().stream().sorted(Comparator.comparing(Salvo::getTurn)).collect(Collectors.toList());
+        List<Salvo> salvosMios = gamePlayer.getSalvos().stream().sorted(Comparator.comparing(Salvo::getTurn)).collect(Collectors.toList());
+
         Map<String,Object> dto = new LinkedHashMap<>();
         if(Objects.nonNull(gamePlayer.getOpponent())) {
-            dto.put("self", gamePlayer.getOpponent().getSalvos()
+            dto.put("self", salvosDelOpp1
                     .stream().map(salvo1 -> gamePlayer.makeHitsDTO(salvo1)).collect(Collectors.toList()));
-            dto.put("opponent", gamePlayer.getSalvos()
+            dto.put("opponent", salvosMios
                     .stream().map(salvo1 -> gamePlayer.getOpponent().makeHitsDTO(salvo1)).collect(Collectors.toList()) );
 
 //            dto.put("self", gamePlayer.makeHitsDTO(gamePlayer.getOpponent()));
@@ -153,14 +159,14 @@ public class SalvoController {
     public ResponseEntity<Map<String, Object>> joinGame(@PathVariable Long gameId, Authentication authentication) {
 
         if (isGuest(authentication)) {
-            return new ResponseEntity<>(makeMap("Error", "Usuario no logueado"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(makeMap("error", "Usuario no logueado"), HttpStatus.UNAUTHORIZED);
         }
         if (gameRepository.findById(gameId).get() == null) {
 
-            return new ResponseEntity<>(makeMap("Error", "No existe ese juego"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(makeMap("error", "No existe ese juego"), HttpStatus.FORBIDDEN);
         }
         if (gameRepository.findById(gameId).get().getGamePlayers().stream().count() == 2) {
-            return new ResponseEntity<>(makeMap("Error", "El juego esta lleno"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(makeMap("error", "El juego esta lleno"), HttpStatus.FORBIDDEN);
         }
 
         Game game = gameRepository.findById(gameId).get();
@@ -174,18 +180,18 @@ public class SalvoController {
         GamePlayer gamePlayer = gamePlayerRepository.findById(gpid).get();
         if (isGuest(authentication)) {
 
-            return new ResponseEntity<>(makeMap("Error", "Usuario no logueado"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(makeMap("error", "Usuario no logueado"), HttpStatus.UNAUTHORIZED);
         }
         if (gamePlayer.getId() != gpid) {
 
-            return new ResponseEntity<>(makeMap("Error", "El usuario no existe"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(makeMap("error", "El usuario no existe"), HttpStatus.UNAUTHORIZED);
         }
         if (playerAuth(authentication).getId() != gamePlayer.getPlayer().getId()) {
 
-            return new ResponseEntity<>(makeMap("Error", "El usuario no  corresponde"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(makeMap("error", "El usuario no  corresponde"), HttpStatus.UNAUTHORIZED);
         }
         if (gamePlayer.getShips().stream().count() >= 5) {
-            return new ResponseEntity<>(makeMap("Error", "Ya colocaste tus barcos"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(makeMap("error", "Ya colocaste tus barcos"), HttpStatus.FORBIDDEN);
         }
 
         //  List<String> locations = ship.getLocations();
@@ -195,7 +201,7 @@ public class SalvoController {
         ships.stream().forEach(ship -> ship.setGamePlayer(gamePlayer));
         shipRepository.saveAll(ships);
 
-        return new ResponseEntity<>(makeMap("ships", "Ships added"), HttpStatus.CREATED);
+        return new ResponseEntity<>(makeMap("OK", "Ships added"), HttpStatus.CREATED);
 
     }
 
@@ -206,25 +212,21 @@ public class SalvoController {
 
         if (isGuest(authentication)) {
 
-            return new ResponseEntity<>(makeMap("Error", "Usuario no logueado"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(makeMap("error", "Usuario no logueado"), HttpStatus.UNAUTHORIZED);
         }
         if (gamePlayer.getId() != gpid) {
 
-            return new ResponseEntity<>(makeMap("Error", "El usuario no existe"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(makeMap("error", "El usuario no existe"), HttpStatus.UNAUTHORIZED);
         }
         if (playerAuth(authentication).getId() != gamePlayer.getPlayer().getId()) {
 
-            return new ResponseEntity<>(makeMap("Error", "El usuario no corresponde"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(makeMap("error", "El usuario no corresponde"), HttpStatus.UNAUTHORIZED);
         }
 
-        // posible error mas adelante, poner >1 en ese caso
-        if (gamePlayer.getSalvos().stream().count() >= 5) {
 
-            return new ResponseEntity<>(makeMap("Error", "Ya colocaste tus Salvos"), HttpStatus.FORBIDDEN);
-        }
         if (gamePlayer.getSalvos().stream().filter(salvo1 -> salvo1.getTurn() == salvo.getTurn()).count() > 0) {
 
-            return new ResponseEntity<>(makeMap("Error", "Ya colocaste tus salvos en este turno"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(makeMap("error", "Ya colocaste tus salvos en este turno"), HttpStatus.FORBIDDEN);
         }
         salvo.setTurn(gamePlayer.getSalvos().size() + 1);
         salvo.setGamePlayer(gamePlayer);
@@ -232,7 +234,7 @@ public class SalvoController {
         //salvoRepository.save(salvo.setGamePlayer(gamePlayer));
         salvoRepository.save(salvo);
 
-        return new ResponseEntity<>(makeMap("Salvos", "Salvos added"), HttpStatus.CREATED);
+        return new ResponseEntity<>(makeMap("OK", "Salvos added"), HttpStatus.CREATED);
     }
 
 
@@ -258,15 +260,132 @@ public class SalvoController {
 
             return "WAITINGFOROPP";
         }
-        if (gamePlayerSelf.getId() < gamePlayerOpponent.getId()) {
-
-            return "PLAY";
-        }
-        if (gamePlayerSelf.getId() > gamePlayerOpponent.getId()) {
-
+        if (gamePlayerOpponent.getShips().size() == 0){
             return "WAIT";
         }
+        if (gamePlayerSelf.getSalvos().size() > 0
+                && gamePlayerOpponent.getSalvos().size() > 0
+                && gamePlayerSelf.getSalvos().size() == gamePlayerOpponent.getSalvos().size()
+                && gamePlayerSelf.lost() == true
+                && gamePlayerOpponent.lost() == true){
+
+
+            Date date = new Date();
+
+            Score score1 = new Score(gamePlayerOpponent.getPlayer(),gamePlayerOpponent.getGame(), 0.5, date);
+            Score score2 = new Score(gamePlayerSelf.getPlayer(),gamePlayerSelf.getGame(), 0.5, date);
+
+            if(!this.existsScore(gamePlayerSelf.getGame())) {
+                scoreRepository.save(score1);
+                scoreRepository.save(score2);
+            }
+
+            return "TIE";
+
+        }
+        if (gamePlayerSelf.getSalvos().size() > 0
+                && gamePlayerOpponent.getSalvos().size() > 0
+                && gamePlayerSelf.getSalvos().size() == gamePlayerOpponent.getSalvos().size()
+                && gamePlayerSelf.lost() == true
+                && gamePlayerOpponent.lost() == false){
+
+            Date date = new Date();
+            Score score = new Score(gamePlayerSelf.getPlayer(),gamePlayerSelf.getGame(), 1.0, date);
+
+            if (!this.existsScore(gamePlayerSelf.getGame())){
+                scoreRepository.save(score);
+            }
+
+            return "WON";
+        }
+        if (gamePlayerSelf.getSalvos().size() > 0
+                && gamePlayerOpponent.getSalvos().size() > 0
+                && gamePlayerSelf.getSalvos().size() == gamePlayerOpponent.getSalvos().size()
+                && gamePlayerSelf.lost() == false
+                && gamePlayerOpponent.lost() == true){
+
+            Date date = new Date();
+            Score score = new Score(gamePlayerSelf.getPlayer(),gamePlayerSelf.getGame(), 0.0, date);
+
+            if (!this.existsScore(gamePlayerSelf.getGame())) {
+                scoreRepository.save(score);
+            }
+            return "LOST";
+        }
+        if (gamePlayerSelf.getId() < gamePlayerOpponent.getId()) {
+            if (gamePlayerSelf.getSalvos().size() > gamePlayerOpponent.getSalvos().size()) {
+
+                return "WAIT";
+            } else if (gamePlayerSelf.getSalvos().size() == gamePlayerOpponent.getSalvos().size()) {
+                if (gamePlayerSelf.getId() < gamePlayerOpponent.getId()) {
+
+                    return "PLAY";
+                } else {
+                    return "WAIT";
+                }
+            }
+        }
+        if (gamePlayerSelf.getId() > gamePlayerOpponent.getId()) {
+            if (gamePlayerSelf.getSalvos().size() < gamePlayerOpponent.getSalvos().size()) {
+
+                return "PLAY";
+            } else if (gamePlayerSelf.getSalvos().size() == gamePlayerOpponent.getSalvos().size()) {
+                if (gamePlayerSelf.getId() > gamePlayerOpponent.getId()) {
+
+                    return "WAIT";
+                } else {
+                    return "PLAY";
+                }
+            }
+        }
+
+
+
+//            if (gamePlayerSelf.getSalvos()
+//                    .size()
+//                    == gamePlayerOpponent.getSalvos()
+//                    .size()
+//                    //compara turnos mios y del opp
+//                    && gamePlayerSelf.getShips()
+//                    .stream()
+//                    .flatMap(_ship -> _ship.getShipLocations().stream())
+//                    .count() == gamePlayerOpponent.totalHits())
+//            // compara el numero total de mis locaciones de mis ships y
+//            {
+//                if (gamePlayerOpponent
+//                        .getShips()
+//                        .stream()
+//                        .mapToLong(ship ->ship.getShipLocations().size())
+//                        .sum() == gamePlayerSelf.totalHits()) {
+//
+//                    return "TIE";
+//                } else {
+//                    return "WON";
+//                }
+//
+//            }
+//            if (gamePlayerSelf.getSalvos()
+//                    .size()
+//                    == gamePlayerOpponent.getSalvos()
+//                    .size()
+//
+//                    && gamePlayerOpponent.getShips()
+//                    .stream()
+//                    .flatMap(_ship -> _ship.getShipLocations().stream())
+//                    .count() == gamePlayerSelf.totalHits()) {
+//
+//                return "LOST";
+//            }
+
+
         return "LOST";
+        }
+
+        public boolean existsScore(Game game){
+        if (game.getScore().isEmpty()){
+            return false;
+        }
+        return true;
+        }
 
     }
-}
