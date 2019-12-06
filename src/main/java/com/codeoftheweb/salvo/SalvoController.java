@@ -133,14 +133,14 @@ public class SalvoController {
     }
 
     private Map<String,Object> hitDTO(GamePlayer gamePlayer) {
-        
-        List<Salvo> salvosMios = gamePlayer.getSalvos().stream().sorted(Comparator.comparing(Salvo::getTurn)).collect(Collectors.toList());
+
+        //List<Salvo> salvosMios = gamePlayer.getSalvos().stream().sorted(Comparator.comparing(Salvo::getTurn)).collect(Collectors.toList());
 
         Map<String,Object> dto = new LinkedHashMap<>();
         if(Objects.nonNull(gamePlayer.getOpponent())) {
-            dto.put("self", salvosMios
+            dto.put("self", gamePlayer.getOpponent().getSalvos().stream().sorted(Comparator.comparing(Salvo::getTurn)).collect(Collectors.toList())
                     .stream().map(salvo1 -> gamePlayer.makeHitsDTO(salvo1)).collect(Collectors.toList()));
-            dto.put("opponent", salvosMios
+            dto.put("opponent", gamePlayer.getSalvos().stream().sorted(Comparator.comparing(Salvo::getTurn)).collect(Collectors.toList())
                     .stream().map(salvo1 -> gamePlayer.getOpponent().makeHitsDTO(salvo1)).collect(Collectors.toList()) );
 
 //            dto.put("self", gamePlayer.makeHitsDTO(gamePlayer.getOpponent()));

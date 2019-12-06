@@ -159,15 +159,15 @@ public Score getScore(){
         List <Salvo> oppSalvo= new ArrayList<>(this.getOpponent().getSalvos());
 
         dto.put("carrier", oppSalvo
-                .stream().map(salvo -> salvo.countHits(getShipByType("carrier"))).reduce(Long::sum).get());
+                .stream().mapToLong(salvo -> salvo.countHits(getShipByType("carrier"))).sum());
         dto.put("battleship", oppSalvo
-                .stream().map(salvo -> salvo.countHits(getShipByType("battleship"))).reduce(Long::sum).get());
+                .stream().mapToLong(salvo -> salvo.countHits(getShipByType("battleship"))).sum());
         dto.put("submarine", oppSalvo
-                .stream().map(salvo -> salvo.countHits(getShipByType("submarine"))).reduce(Long::sum).get());
+                .stream().mapToLong(salvo -> salvo.countHits(getShipByType("submarine"))).sum());
         dto.put("destroyer", oppSalvo
-                .stream().map(salvo -> salvo.countHits(getShipByType("destroyer"))).reduce(Long::sum).get());
+                .stream().mapToLong(salvo -> salvo.countHits(getShipByType("destroyer"))).sum());
         dto.put("patrolboat", oppSalvo
-                .stream().map(salvo -> salvo.countHits(getShipByType("patrolboat"))).reduce(Long::sum).get());
+                .stream().mapToLong(salvo -> salvo.countHits(getShipByType("patrolboat"))).sum());
 
 
         return dto;
