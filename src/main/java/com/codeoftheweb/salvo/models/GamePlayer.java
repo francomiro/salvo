@@ -1,5 +1,6 @@
 package com.codeoftheweb.salvo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -80,6 +81,7 @@ public class GamePlayer {
 
     }
 
+    @JsonIgnore
     public GamePlayer getOpponent(){
         return this.getGame().getGamePlayers().stream()
                 .filter(gamePlayer -> gamePlayer.getId() != this.getId())
@@ -173,18 +175,24 @@ public Score getScore(){
         return dto;
     }
 
-    public List<String> getHitsLocation( Salvo salvoOpp){
-        return this.getShips()
-                .stream()
-                .flatMap(ship -> ship.getShipLocations()
-                        .stream()
-                        .flatMap(shiploc -> salvoOpp
-                                .getSalvoLocations()
-                                .stream()
-                                .filter(salvoLoc-> shiploc.contains(salvoLoc))))
-                .collect(Collectors.toList());
+//    public List<String> getHitsLocation( Salvo salvoOpp){
+//        return ships
+//                .stream()
+//                .flatMap(ship -> ship.getShipLocations()
+//                        .stream()
+//                        .flatMap(shiploc -> salvoOpp
+//                                .getSalvoLocations()
+//                                .stream()
+//                                .filter(salvoLoc-> shiploc.equals(salvoLoc))))
+//                .collect(Collectors.toList());
 
-    }
+        public List<String> getHitsLocation(Salvo s) {
+
+            List<String> shipLocations = ships.stream().flatMap(ship -> ship.getShipLocations().stream()).collect(Collectors.toList());
+            return s.getSalvoLocations().stream().filter(s1 -> shipLocations.contains(s1)).collect(Collectors.toList());
+        }
+
+
 
     public long hitMissed(Salvo a){
 
@@ -214,7 +222,7 @@ public Score getScore(){
 
     }
 
-    public boolean lost(){
+    public boolean win(){
 
     if(this.getShips()
                 .stream()

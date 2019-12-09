@@ -134,7 +134,8 @@ public class SalvoController {
 
     private Map<String,Object> hitDTO(GamePlayer gamePlayer) {
 
-        //List<Salvo> salvosMios = gamePlayer.getSalvos().stream().sorted(Comparator.comparing(Salvo::getTurn)).collect(Collectors.toList());
+//        List<Salvo> salvosMios = gamePlayer.getSalvos().stream().sorted(Comparator.comparing(Salvo::getTurn)).collect(Collectors.toList());
+//        List<Salvo> salvosOpp = gamePlayer.getOpponent().getSalvos().stream().sorted(Comparator.comparing(Salvo::getTurn)).collect(Collectors.toList());
 
         Map<String,Object> dto = new LinkedHashMap<>();
         if(Objects.nonNull(gamePlayer.getOpponent())) {
@@ -227,6 +228,7 @@ public class SalvoController {
 
             return new ResponseEntity<>(makeMap("error", "Ya colocaste tus salvos en este turno"), HttpStatus.FORBIDDEN);
         }
+
         salvo.setTurn(gamePlayer.getSalvos().size() + 1);
         salvo.setGamePlayer(gamePlayer);
 
@@ -265,8 +267,8 @@ public class SalvoController {
         if (gamePlayerSelf.getSalvos().size() > 0
                 && gamePlayerOpponent.getSalvos().size() > 0
                 && gamePlayerSelf.getSalvos().size() == gamePlayerOpponent.getSalvos().size()
-                && gamePlayerSelf.lost() == true
-                && gamePlayerOpponent.lost() == true){
+                && gamePlayerSelf.win() == true
+                && gamePlayerOpponent.win() == true){
 
 
             Date date = new Date();
@@ -285,8 +287,8 @@ public class SalvoController {
         if (gamePlayerSelf.getSalvos().size() > 0
                 && gamePlayerOpponent.getSalvos().size() > 0
                 && gamePlayerSelf.getSalvos().size() == gamePlayerOpponent.getSalvos().size()
-                && gamePlayerSelf.lost() == true
-                && gamePlayerOpponent.lost() == false){
+                && gamePlayerSelf.win() == true
+                && gamePlayerOpponent.win() == false){
 
             Date date = new Date();
             Score score = new Score(gamePlayerSelf.getPlayer(),gamePlayerSelf.getGame(), 1.0, date);
@@ -300,12 +302,11 @@ public class SalvoController {
         if (gamePlayerSelf.getSalvos().size() > 0
                 && gamePlayerOpponent.getSalvos().size() > 0
                 && gamePlayerSelf.getSalvos().size() == gamePlayerOpponent.getSalvos().size()
-                && gamePlayerSelf.lost() == false
-                && gamePlayerOpponent.lost() == true){
+                && gamePlayerSelf.win() == false
+                && gamePlayerOpponent.win() == true){
 
             Date date = new Date();
             Score score = new Score(gamePlayerSelf.getPlayer(),gamePlayerSelf.getGame(), 0.0, date);
-
             if (!this.existsScore(gamePlayerSelf.getGame())) {
                 scoreRepository.save(score);
             }
