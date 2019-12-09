@@ -175,22 +175,22 @@ public Score getScore(){
         return dto;
     }
 
-//    public List<String> getHitsLocation( Salvo salvoOpp){
-//        return ships
-//                .stream()
-//                .flatMap(ship -> ship.getShipLocations()
-//                        .stream()
-//                        .flatMap(shiploc -> salvoOpp
-//                                .getSalvoLocations()
-//                                .stream()
-//                                .filter(salvoLoc-> shiploc.equals(salvoLoc))))
-//                .collect(Collectors.toList());
+    public List<String> getHitsLocation( Salvo salvoOpp){
+        return ships
+                .stream()
+                .flatMap(ship -> ship.getShipLocations()
+                        .stream()
+                        .flatMap(shiploc -> salvoOpp
+                                .getSalvoLocations()
+                                .stream()
+                                .filter(salvoLoc-> shiploc.equals(salvoLoc))))
+                .collect(Collectors.toList());
 
-        public List<String> getHitsLocation(Salvo s) {
-
-            List<String> shipLocations = ships.stream().flatMap(ship -> ship.getShipLocations().stream()).collect(Collectors.toList());
-            return s.getSalvoLocations().stream().filter(s1 -> shipLocations.contains(s1)).collect(Collectors.toList());
-        }
+//        public List<String> getHitsLocation(Salvo s) {
+//
+//            List<String> shipLocations = ships.stream().flatMap(ship -> ship.getShipLocations().stream()).collect(Collectors.toList());
+//            return s.getSalvoLocations().stream().filter(s1 -> shipLocations.contains(s1)).collect(Collectors.toList());
+       }
 
 
 
